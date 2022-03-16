@@ -1,0 +1,79 @@
+
+<!--Code displays information about 8 different types of fish by calling the FishWatch.gov Species Content API.
+The user can select a certain fish and display specific details about them (Availability, Biology, etc)
+-->
+
+<form id = "fishForm">
+    <label for = "fish">Select a fish you would like to learn more about</label>
+    <select name = "fish" id = "userFish">
+      <optgroup label="Shellfish">
+        <option value="American Lobster">American Lobster</option>
+        <option value="Alaskan Snow Crab">Alaskan Snow Crab</option>
+        <option value = "Pink Shrimp">Pink Shrimp</option>
+        <option value = "Pacific Oyster">Pacific Oyster</option>
+      </optgroup>
+      <optgroup label="Finned fish">
+        <option value = "Acadian Redfish">Acadian Redfish</option>
+        <option value = "Atlantic Bigeye Tuna">Atlantic Bigeye Tuna</option>
+        <option value = "Atlantic Salmon">Atlantic Salmon</option>
+        <option value = "Pacific Cod">Pacific Cod</option>
+
+      </optgroup>
+    </select>
+
+    <!--ids cannot be numbers, but are named so they can be gone through in a for loop-->
+    <legend>Select what you would like to know about your fish</legend>
+    <input type = "checkbox" id = "x1" value = "Fishery Management">Fishery Management</option>
+    <input type = "checkbox" id = "x2" value = "Availability">Availability</option>
+    <input type = "checkbox" id = "x3" value = "Biology">Biology</option>
+    <input type = "checkbox" id = "x4" value = "Harvest">Harvest</option>
+    <input type = "submit" value = "Get data"></input>
+</form>
+<!--Element to store html generated from API call to Fish Watch-->
+<p id="Fishtext"></p>
+
+<script>
+  // variable that holds form DOM
+  var form = document.getElementById('fishForm');
+ 
+  //If user presses submit 
+  form.addEventListener('submit', function(event) {
+    event.preventDefault() // prevents from auto submitting
+    // clear the previous html
+    document.getElementById('Fishtext').innerHTML = ""; 
+    var fish = document.getElementById('userFish').value;
+  
+    // formats user input for api call
+    fish = fish.split(' ').map(c => c.charAt(0).toLowerCase() + c.substring(1).toLowerCase()).join(' ').replace(' ', '-');
+    
+  
+    const URL = "https://www.fishwatch.gov/api/species/" + fish;
+    const getFish = async () => {
+      try {
+        document.getElementById("Fishtext").innerHTML
+        const response = await fetch(URL);
+        if (response.ok) {
+          const res = await response.json();
+          
+          for(i = 1; i <= 4; i++){
+            if(document.getElementById('x' + i).checked){
+             // displays text on UI 
+             document.getElementById("Fishtext").innerHTML += (document.getElementById('x'+i).value + ":" + 
+             (res["0"][document.getElementById("x"+i).value]));
+            }
+  
+          }
+          
+        }
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
+    document.getElementById("Fishtext");
+    getFish();
+    
+  });
+       
+</script>
+
